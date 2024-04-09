@@ -6,6 +6,7 @@ import { ValidEmail, ValidPassword } from "../validation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
+import { BACKEND_URL } from "../../config";
 
 const SignUpComp = () => {
   const [signup, setSignup] = useState({
@@ -16,16 +17,13 @@ const SignUpComp = () => {
   })
   const route = useNavigate();
   const isMobile = useMediaQuery("(max-width: 420px)");
-  
+
   const [errorText, SetErrorText] = useState("");
   const [error, setError] = useState(false);
   const [checked, setChecked] = useState(false);
   const [usernameError, setUsernameError] = useState(false);
 
-  // console.log(signup);
-
   const handle = (e: React.ChangeEvent<HTMLInputElement>) => {
-
     const { id, value } = e.target
     if (id === "email") {
       const s = ValidEmail.safeParse({ email: value });
@@ -37,7 +35,6 @@ const SignUpComp = () => {
         setError(!s.success)
         SetErrorText("")
       }
-      // console.log(s);
     }
     if (id === "password") {
       const s = ValidPassword.safeParse({ password: value });
@@ -49,43 +46,49 @@ const SignUpComp = () => {
         setError(!s.success)
         SetErrorText("")
       }
-      // console.log(s);
     }
-    sessionStorage.setItem(id, value);
+    if(id==="email"){
+      sessionStorage.setItem(id, value)
+    }
     setSignup({ ...signup, [id]: value });
   }
 
   const handleCreateAccountbutton: MouseEventHandler<HTMLButtonElement> = async (e) => {
     e.preventDefault()
-    const response = await axios.post("http://localhost:3000/user/signup", signup)
-    const StatusCode = response.status;
-
-    if (StatusCode === 202) {
-      if (response.data.error.target[0] === "username") {
-        setUsernameError(!usernameError)
-        setError(!error)
-        SetErrorText("Username already taken")
-        console.log(`username`);
-      }
-      else if(response.data.error.target[0] === "email") {
-        setError(!error)
-        SetErrorText("Email is already taken")
-        console.log(`email`);
-      }
+    if (signup.name === "" || signup.username === "" || signup.email === "" || signup.password === "") {
+      setError(!error)
+      SetErrorText("Inputs Are Empty")
     }
-    else if (StatusCode === 200) {
-      console.log(response.data.post.id);
+    else {
+      const response = await axios.post(`${BACKEND_URL}/user/signup`, signup)
+      const StatusCode = response.status;
 
+      if (StatusCode === 202) {
+        if (response.data.error.target[0] === "username") {
+          setUsernameError(!usernameError)
+          setError(!error)
+          SetErrorText("Username already taken")
+          // console.log(`username`);
+        }
+        else if (response.data.error.target[0] === "email") {
+          setError(!error)
+          SetErrorText("Email is already taken")
+          // console.log(`email`);
+        }
+      }
+      else if (StatusCode === 200) {
+        const id = response.data.post.id
+        sessionStorage.setItem("id", id);
+        route("/profile");
+      }
     }
   }
-
 
   const handleOnChange = () => {
     setChecked(!checked)
   };
 
   return (
-
     <div className="h-screen flex  flex-col">
       <div className="flex justify-end sm:mb-20 p-6 font-semibold">Already a member? <a href="#" className="ml-1 text-blue-500 cursor-pointer">Sign In</a></div>
 
@@ -112,8 +115,6 @@ const SignUpComp = () => {
 
                   <input onChange={handle} type="text" id="username" className="bg-gray-100 text-gray-900 text-sm rounded-lg block w-full p-2.5 outline-none" placeholder="Username" required />
                 </div>
-                {/* <LabelledInput label="Username" placeholder="Username" onChange={handle} /> */}
-
               </div>
             </div>
 

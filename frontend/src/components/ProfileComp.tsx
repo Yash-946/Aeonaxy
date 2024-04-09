@@ -1,18 +1,28 @@
 import { Camera, ChevronRight } from "lucide-react";
-import React, { MouseEventHandler, useRef, useState } from "react";
+import React, { MouseEventHandler, useEffect, useRef, useState } from "react";
 import { cn } from "../lib/util";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { CLOUD_NAME, UPLOAD_PRESENT } from "../../config";
 
 const ProfileComp = () => {
   const route = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
   const [image, setImage] = useState<File | null>(null);
+  const [imageURL, setImageURL] = useState<string>("");
   const [location, setLocation] = useState<string>("");
+
+
+  useEffect(() => {
+    if (imageURL !== "") {
+      route("/reason", { state: { location, imageURL } });
+    }
+  }, [imageURL]);
 
   const handleImageClick = () => {
     inputRef.current?.click();
   }
-
+ 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     setImage(file || null);
@@ -23,9 +33,22 @@ const ProfileComp = () => {
     setLocation(x);
   }
 
-  const handleNextbutton: MouseEventHandler<HTMLButtonElement> = (event) => {
-    route("/reason");
-  };
+  const uploadImage:MouseEventHandler<HTMLButtonElement> = async () => {
+    try {
+      const formData = new FormData();
+      formData.append('file', image!);
+      formData.append('upload_preset', UPLOAD_PRESENT); 
+      formData.append('cloud_name', CLOUD_NAME); 
+      
+      const response = await axios.post(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, formData);
+      const data  = response.data;
+      // console.log('Image uploaded successfully:', data.secure_url);
+      setImageURL(data.secure_url);
+      
+    } catch (error) {
+      console.error('Error uploading image:', error);
+    }
+  }
 
   return (
     <div className="">
@@ -88,7 +111,7 @@ const ProfileComp = () => {
           image && location && "bg-[#ea4b8a] cursor-pointer"
         )}
         disabled={!image || !location}
-        onClick={handleNextbutton}
+        onClick={uploadImage}
       >
         Next
       </button>
