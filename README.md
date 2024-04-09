@@ -5,5 +5,8 @@
 
 # Backend
 + Node + Express for server
-+ PostgresSQL for database through Prisma ORM
++ Neon PostgresSQL for database through Prisma ORM
 + Resend for sending mails
+
+> [!CAUTION]
+> Please wait while after clicking on buttons it may take while to move forward because backend is hosted on **render**
