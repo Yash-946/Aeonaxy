@@ -7,7 +7,7 @@ const SingUp = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
         <div className="hidden lg:block">
           <img
-            className="h-screen"
+            className="h-screen w-screen"
             src="/image2.jpeg"
             alt="Dibble logo"
           />

@@ -47,7 +47,7 @@ const SignUpComp = () => {
         SetErrorText("")
       }
     }
-    if(id==="email"){
+    if (id === "email") {
       sessionStorage.setItem(id, value)
     }
     setSignup({ ...signup, [id]: value });
@@ -89,8 +89,8 @@ const SignUpComp = () => {
   };
 
   return (
-    <div className="h-screen flex  flex-col">
-      <div className="flex justify-end sm:mb-20 p-6 font-semibold">Already a member? <a href="#" className="ml-1 text-blue-500 cursor-pointer">Sign In</a></div>
+    <div className="h-screen flex justify-center  flex-col">
+      <div className="flex justify-end sm:mt-36 p-6 font-semibold">Already a member? <a href="#" className="ml-1 text-blue-500 cursor-pointer">Sign In</a></div>
 
       <div className="flex justify-center mb-10 sm:mb-32 p-6 md:p-2">
         <div>
